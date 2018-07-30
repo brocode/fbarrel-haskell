@@ -8,7 +8,7 @@ stages:
 compile:
     stage: build
     script:
-      - pacman -Sy ghc-static
+      - pacman -Sy --noconfirm ghc-static
       - cabal update
       - cabal install --only-dependencies
       - cabal build
