@@ -1,0 +1,13 @@
+
+image: marcelhuberfoo/cabal-build
+
+
+stages:
+    - build
+
+
+compile:
+    stage: build
+    script:
+      - cabal build
+  
