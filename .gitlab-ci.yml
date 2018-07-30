@@ -1,4 +1,3 @@
-
 image: marcelhuberfoo/cabal-build
 
 
@@ -9,5 +8,6 @@ stages:
 compile:
     stage: build
     script:
+      - cabal install --only-dependencies
       - cabal build
   
