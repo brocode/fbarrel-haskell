@@ -8,6 +8,7 @@ stages:
 compile:
     stage: build
     script:
+      - cabal update
       - cabal install --only-dependencies
       - cabal build
   
