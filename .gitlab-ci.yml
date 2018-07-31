@@ -8,5 +8,5 @@ stages:
 compile:
     stage: build
     script:
-      - stack build
+      - stack build --ghc-options '-optl-static -fPIC'
   
