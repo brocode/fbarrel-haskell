@@ -8,8 +8,7 @@ import Control.Monad.IO.Class (liftIO)
 import System.Directory (getDirectoryContents)
 import Data.List (isSuffixOf)
 import System.FilePath ((</>))
-import           System.Console.Pretty (Color (..), Style (..), bgColor, color,
-                                        style, supportsPretty)
+import System.Console.ANSI
 
 
 flags :: Flag "p" '["path"] "STRING" "path" (String)
@@ -32,7 +31,9 @@ barrel path = do
 processFile :: String -> String -> IO()
 processFile path file = do
   putStr $ "Processing: " ++ path ++ "/"
-  putStr ( (color Blue . style Bold) file )
+  setSGR [ SetConsoleIntensity BoldIntensity , SetColor Foreground Dull Blue]
+  putStr file
+  setSGR [Reset]
   putStrLn ""
 
 

@@ -12,7 +12,6 @@ maintainer:          bomgar85@googlemail.com
 -- copyright:
 category:            Development
 build-type:          Simple
-extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 executable fbarrel
@@ -23,6 +22,6 @@ executable fbarrel
                      , optparse-declarative >=0.3 && <4
                      , directory
                      , filepath
-                     , pretty-terminal
+                     , ansi-terminal >= 0.8
   hs-source-dirs:      src
   default-language:    Haskell2010
