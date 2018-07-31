@@ -7,7 +7,7 @@ import Options.Declarative
 import Control.Monad.IO.Class (liftIO)
 import System.Directory (getDirectoryContents)
 import Data.List (isSuffixOf)
-import System.FilePath ((</>))
+import System.FilePath ((</>), takeFileName, takeDirectory)
 import System.Console.ANSI
 
 
@@ -26,13 +26,13 @@ barrel path = do
     putStrLn path
     all <- getDirectoryContents path
     let filtered = filter (isSuffixOf "tsx") all
-    mapM_ (processFile path) filtered
+    mapM_ (\f -> processFile $ path </> f) filtered
 
-processFile :: String -> String -> IO()
-processFile path file = do
-  putStr $ "Processing: " ++ path ++ "/"
+processFile :: FilePath -> IO()
+processFile file = do
+  putStr $ "Processing: " ++ (takeDirectory file) ++ "/"
   setSGR [ SetConsoleIntensity BoldIntensity , SetColor Foreground Dull Blue]
-  putStr file
+  putStr $ takeFileName file
   setSGR [Reset]
   putStrLn ""
 
