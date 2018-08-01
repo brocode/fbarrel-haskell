@@ -5,7 +5,7 @@ module Main where
 
 import Options.Declarative
 import Control.Monad.IO.Class (liftIO)
-import System.Directory (getDirectoryContents)
+import System.Directory (getDirectoryContents, doesDirectoryExist)
 import Data.List (isSuffixOf)
 import System.FilePath ((</>), takeFileName, takeDirectory)
 import System.Console.ANSI
@@ -22,11 +22,22 @@ main :: IO ()
 main = run_ flags
 
 barrel :: String -> IO()
-barrel path = do
-    putStrLn path
-    all <- getDirectoryContents path
-    let filtered = filter (isSuffixOf "tsx") all
-    mapM_ (\f -> processFile $ path </> f) filtered
+barrel = scanDir
+
+scanDir :: String -> IO()
+scanDir path = do
+    files <- getDirectoryContents path
+    mapM_ processEntry files
+    where
+      processEntry :: FilePath -> IO()
+      processEntry file | isSuffixOf "tsx" file = processFile $ path </> file
+      processEntry file | file =="." || file == ".." = return ()
+      processEntry file = do
+        isDirectory <- doesDirectoryExist $ path </> file
+        if isDirectory
+           then scanDir $ path </> file
+           else
+              return ()
 
 processFile :: FilePath -> IO()
 processFile file = do
