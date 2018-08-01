@@ -9,6 +9,7 @@ import System.Directory (getDirectoryContents, doesDirectoryExist)
 import Data.List (isSuffixOf)
 import System.FilePath ((</>), takeFileName, takeDirectory)
 import System.Console.ANSI
+import Text.Regex.Posix(AllTextMatches, getAllTextMatches, (=~))
 
 
 flags :: Flag "p" '["path"] "STRING" "path" (String)
@@ -36,15 +37,24 @@ scanDir path = do
         isDirectory <- doesDirectoryExist $ path </> file
         if isDirectory
            then scanDir $ path </> file
-           else
-              return ()
+           else return ()
 
 processFile :: FilePath -> IO()
 processFile file = do
-  putStr $ "Processing: " ++ (takeDirectory file) ++ "/"
-  setSGR [ SetConsoleIntensity BoldIntensity , SetColor Foreground Dull Blue]
-  putStr $ takeFileName file
-  setSGR [Reset]
-  putStrLn ""
+  logProcessStart
+  content <- readFile file
+  let matches =  content =~ pat :: [[String]]
+  putStrLn $ show matches
+  return ()
+  where
+    pat :: String
+    pat = "export default (class|interface|type )?(\\w+)"
+    logProcessStart :: IO()
+    logProcessStart = do
+      putStr $ "Processing: " ++ (takeDirectory file) ++ "/"
+      setSGR [ SetConsoleIntensity BoldIntensity , SetColor Foreground Dull Blue]
+      putStr $ takeFileName file
+      setSGR [Reset]
+      putStrLn ""
 
 
