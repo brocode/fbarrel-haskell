@@ -9,3 +9,8 @@ os:
 
 script:
   - bash build.sh
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always

@@ -1,5 +1,7 @@
 * fbarrel
 
+  [[https://travis-ci.org/brocode/fbarrel-haskell][file:https://travis-ci.org/brocode/fbarrel-haskell.svg?branch=master]]
+
   Unfinished Haskell clone of [[https://github.com/brocode/fbarrel][fbarrel]]. I wanted to learn some Haskell
   and thought this is a nice use case to learn file IO.
 
