@@ -48,7 +48,7 @@ processFile file = do
   return ()
   where
     pat :: String
-    pat = "export default (class|interface|type )?(\\w+)"
+    pat = "export ((class|interface|type )|(default (class|interface|type )?))(\\w+)"
     logProcessStart :: IO()
     logProcessStart = do
       putStr $ "Processing: " ++ (takeDirectory file) ++ "/"
