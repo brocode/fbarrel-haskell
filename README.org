@@ -1,0 +1,3 @@
+* fbarrel
+
+  Haskell clone of [[https://github.com/brocode/fbarrel][fbarrel]]
