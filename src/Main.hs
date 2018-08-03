@@ -4,7 +4,8 @@
 module Main where
 
 import Control.Monad.IO.Class (liftIO)
-import Data.List (isPrefixOf, isSuffixOf)
+import Data.List (isPrefixOf, isSuffixOf, stripPrefix)
+import Data.Maybe (fromJust)
 import Options.Declarative
 import System.Console.ANSI
 import System.Directory (doesDirectoryExist, getDirectoryContents)
@@ -75,4 +76,11 @@ processFile file = do
 
 writeExports :: FilePath -> [FileExports] -> IO ()
 writeExports path fileExports = do
+  let exportStrings = map toExportString fileExports
   putStrLn "Writing fbarrel.ts"
+  mapM_ putStrLn exportStrings
+  where
+    toExportString :: FileExports -> String
+    toExportString (FileExports filePath exports) =
+      let newPath = stripPrefix (path ++ "/") filePath
+       in "export {} from '" ++ (fromJust newPath) ++ "'"
