@@ -1,0 +1,11 @@
+language: haskell
+
+services:
+  - docker
+
+os:
+  - linux
+
+
+script:
+  - bash build.sh
