@@ -4,7 +4,7 @@
 module Main where
 
 import Control.Monad.IO.Class (liftIO)
-import Data.List (isPrefixOf, isSuffixOf, stripPrefix)
+import Data.List (intercalate, isPrefixOf, isSuffixOf, stripPrefix)
 import Data.Maybe (fromJust)
 import Options.Declarative
 import System.Console.ANSI
@@ -80,7 +80,14 @@ writeExports path fileExports = do
   putStrLn "Writing fbarrel.ts"
   mapM_ putStrLn exportStrings
   where
+    exportsToExportString :: [Export] -> String
+    exportsToExportString exports = intercalate ", " $ filteredExportsToString ++ defaultExportsToString
+      where
+        defaultExports = filter isDefault exports
+        defaultExportsToString = map (\e -> "default as " ++ (exportName e)) defaultExports
+        filteredExports = filter (not . (\e -> elem (exportName e) (map exportName defaultExports))) exports
+        filteredExportsToString = map exportName filteredExports
     toExportString :: FileExports -> String
     toExportString (FileExports filePath exports) =
       let newPath = stripPrefix (path ++ "/") filePath
-       in "export {} from '" ++ (fromJust newPath) ++ "'"
+       in "export {" ++ (exportsToExportString exports) ++ "} from '" ++ (fromJust newPath) ++ "'"
