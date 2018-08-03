@@ -6,11 +6,17 @@ module Main where
 import Options.Declarative
 import Control.Monad.IO.Class (liftIO)
 import System.Directory (getDirectoryContents, doesDirectoryExist)
-import Data.List (isSuffixOf)
+import Data.List (isSuffixOf, isPrefixOf)
 import System.FilePath ((</>), takeFileName, takeDirectory)
 import System.Console.ANSI
 import Text.Regex.Posix(AllTextMatches, getAllTextMatches, (=~))
 
+
+data Export = Export {
+  file :: FilePath,
+  exportName :: String,
+  isDefault :: Bool
+} deriving(Show)
 
 flags :: Flag "p" '["path"] "STRING" "path" (String)
       -> Arg "ARGS" [String]
@@ -23,32 +29,40 @@ main :: IO ()
 main = run_ flags
 
 barrel :: String -> IO()
-barrel = scanDir
+barrel path = do
+    exports <- scanDir path
+    return ()
 
-scanDir :: String -> IO()
+scanDir :: String -> IO [Export]
 scanDir path = do
     files <- getDirectoryContents path
-    mapM_ processEntry files
+    exports <- mapM processEntry files
+    return $ concat exports
     where
-      processEntry :: FilePath -> IO()
+      processEntry :: FilePath -> IO [Export]
       processEntry file | isSuffixOf "tsx" file = processFile $ path </> file
-      processEntry file | file =="." || file == ".." = return ()
+      processEntry file | file =="." || file == ".." = return []
       processEntry file = do
         isDirectory <- doesDirectoryExist $ path </> file
         if isDirectory
            then scanDir $ path </> file
-           else return ()
+           else return []
 
-processFile :: FilePath -> IO()
+processFile :: FilePath -> IO [Export]
 processFile file = do
   logProcessStart
   content <- readFile file
   let matches =  content =~ pat :: [[String]]
-  putStrLn $ show matches
-  return ()
+  let exports = map matchToExport matches
+  mapM_ putStrLn $ map (show . exportName) exports
+  return exports
   where
     pat :: String
-    pat = "export ((class|interface|type )|(default (class|interface|type )?))(\\w+)"
+    pat = "export ((class |interface |type )|(default (class |interface |type )?))(\\w+)"
+
+    matchToExport :: [String] -> Export
+    matchToExport [_, exportType, _, _, _, name] = Export {exportName = name, file = file, isDefault = (isPrefixOf "default" exportType)}
+
     logProcessStart :: IO()
     logProcessStart = do
       putStr $ "Processing: " ++ (takeDirectory file) ++ "/"
